@@ -1,10 +1,10 @@
 # Interview Studio
 
-Browser-based practice for U of T Engineering and UBC Sauder BCom video interviews. Includes question filters, example story cards, timed practice, and optional local recording.
+Browser-based practice for U of T Engineering and UBC Sauder BCom video interviews. The bilingual search ranks questions by meaning using a local concept index. Full English practice answers are available in three lengths. The timed simulator shows the relevant answer length after each session.
 
-The examples are fictional or anonymized. Questions attributed to public discussions are unverified recollections or practice examples. Follow the official applicant portal for actual instructions.
+The question bank labels firsthand recollections, published practice examples and original scenarios separately. Practice answers can be adapted from experience, fictional or hypothetical. See the official applicant portal for the current assessment instructions.
 
-There is no backend. Recording is optional. Videos stay in the browser session. Camera and microphone access typically requires HTTPS.
+The site has no backend. Recording is optional and videos stay in the browser session. Camera and microphone access typically requires HTTPS.
 
 ## Publish
 

@@ -1,43 +1,125 @@
 const groups = ['项目与动机','反馈与挫折','团队与分歧','社区与公平','价值与判断','设计与创意'];
-const stories = {
- tour:['校园模拟游戏｜导师反馈','三人课程项目、导师质疑游戏价值、校园导览、主要代码工作。','虚构细节：第一次演示中，队友问参观学校为什么会比刷分更有意思。','Our instructor asked what someone would learn after playing our college application game. I had been focused on getting it to work. I suggested campus tours so players could explore a virtual campus and ask questions about the school. That gave us a different way to judge a feature: could a player do something useful with it? If I were starting again, I would ask that question before writing the first version.','老师到底问了什么？你提出的第一项可落地改动是什么？'],
- reward:['校园模拟游戏｜奖励设计','后续 Q-learning 模拟、规则基线、偏学习和休息、少选择兼职。','虚构细节：你把两条模拟路径放在同一张表里，才发现高分策略总在重复。','I looked at a Q-learning extension for our admissions game. Its reward score was higher than the rule-based baseline, but it kept picking study and rest and barely chose paid work. The result made sense once I thought about what the reward actually encouraged. If I ran another comparison, I would track how many different paths players could take as well as the reward.','你亲自做了哪一步？哪一项结果与你原本的预期不同？'],
- geo:['地理线索搜索工具｜好奇心与可追溯性','GeoGuessr 线索资料分散，项目原型按描述检索中英文笔记并保留来源。','虚构细节：你搜了一种路牌背面，系统把相似标记误认为同一个线索。','Sometimes I notice a detail in Street View and can describe it, but I don’t know what it is called. That’s why I started thinking about a clue search tool. The idea is to search notes in Chinese and English and keep the original links. I like being able to go back to the notes, especially when two places have similar clues. A convincing explanation only helps if I can check it.','有没有一个你真实查过但叫不出名字的线索？'],
- club:['GeoGuessr 社团｜新人参赛','跨部门跨年级比赛、水平差距、收集教程、低年级成员后续接手。','虚构细节：一个新人告诉你，他第一轮就想退出，因为完全听不懂高手们说的线索。','I was proud that students across our school could enter our GeoGuessr competitions. I’d been playing long enough that I forgot how much there was to learn at the start. A few strong players dominated, so I collected tutorials and shared them in our chat. It was good to see younger students still using the resources and organizing their own activities later.','你真正观察到的新人反馈是什么？后来他们自主做了什么？'],
- bench:['长曲棍球｜替补与轮换','起初对做替补失望，后来观察轮换并理解替补能怎样支持球队。','虚构细节：你注意到一个队友连续跑动后跟不上回防，才理解轮换的时机。','I was disappointed when I found out I would be a substitute. I thought the work I put in at practice ought to earn me a start. Watching from the bench helped me see how the game changed when players got tired. I could still be useful when a teammate needed a break. If I were in that situation again, I’d ask earlier what the team needed from me.','当时哪些轮换确实发生过？你从场边看到了什么？'],
- orbit:['策略游戏竞赛｜策略失效','原来相信手写启发式，在竞赛中遇到更强策略，转向学习机器学习并参与 AI 竞赛。','虚构细节：你的 agent 在资源紧张时继续进攻，连续几轮无法恢复。','I went into a strategy game competition thinking I could cover most situations by writing enough rules. That worked well enough in some games, so I kept adding more. Against stronger opponents the limits became obvious. I wanted to understand how an agent could discover strategies I had not thought of, and that interest followed me into my preparation for an AI competition.','哪个条件或失败局面你真的记得？你改变了什么学习方法？'],
- iyp:['物理竞赛｜模型与实验','参加 Physics Fights，参与建模、实验、汇报或质疑推理。','虚构细节：两组结果差异很大，后来发现读数起点不一致。','In a Physics Fight, it matters which assumption the result depends on. I’d start by asking what the model holds constant, then check how the measurement was made. Even a neat curve isn’t very useful if two groups have measured different things. That comparison is the part of physics I enjoy most.','找一个你真实改过的实验条件，或你确实提出过的问题。'],
- math:['竞赛准备｜数学与编程','数学和算法竞赛是练习调试与验证的一个例子。','虚构细节：自己写的快速算法只在很小的样例上通过，于是用暴力解做对照。','In this practice example, I thought my fast solution was finished because it passed the samples. I wrote a slow version for small cases and compared the outputs. The first difference gave me a much more useful clue than the score did. I’d show the smallest case where the two answers disagree and explain what assumption it exposed.','你是否记得自己真的用过的反例、边界条件或调试方法？'],
- audio:['音乐与编程｜做出能听到的区别','Shoegaze 兴趣、Web Audio 音效滤镜项目。','虚构细节：朋友觉得效果主要是变响了，你随后把输出音量调到一致。','In this practice example, I was excited about an audio filter I had made. A friend said it sounded louder, which was different from what I wanted. I compared the two at the same volume. That gave me a way to tell whether I was changing the sound I cared about.','如果你确实给别人听过，反馈是什么？有没有真正做过前后对比？'],
- mentor:['学习 RAG｜主动求助','暑期老师介绍文本 RAG 基础，后来考虑把它用到 GeoGuessr。','虚构细节：老师让你先检查检索文本，再去改回答模型。','I learned the basics of text-based retrieval during the summer. I kept thinking about it once I had a reason to use it for GeoGuessr. If a result is odd, I want to know what information the system found before I decide whether the answer itself is the problem.','老师真实给过你什么解释、例子或建议？'],
- event:['情境｜活动资源怎么分','通用虚拟情境，和你实际的社团活动分开。','假设：只有一个场地，高手想办正式赛，新手希望有人先陪练。','I’d first find out whether both groups needed the room at the same time. I’d try a short open practice followed by a competition and ask a few experienced players to help during the first part. I’d check whether beginners stayed to play and whether the stronger players still felt they had enough competition time.','题目给的约束变了以后，谁最受影响？你会先问什么？'],
- queue:['情境｜工程设计与验证','通用虚拟情境，可练目标、数据、取舍、测试。','假设：午休排队拥堵，预算不够增开窗口。','I’d watch where the queue actually slows down: choosing food, paying, or picking it up. If payment is the bottleneck, I’d test a separate collection line for pre-orders on one day. I’d measure the wait for both lines. If it only helps one group by making others wait longer, I’d change the setup.','换成校园交通、图书馆或活动报名时，哪项测量会不同？'],
- ethics:['情境｜数据和同意','通用虚拟情境，可练判断和团队沟通。','假设：团队想把聊天记录放进 demo 数据，但参与者没同意。','I’d pause the upload and ask what part of the demo actually needs real messages. We could use made-up examples to show the feature. If we later need real data, I’d ask permission and agree on what to retain. I’d tell the team why before changing anything so we still have a plan for the deadline.','什么时候需要升级问题？你能提出什么现实可行的替代？'],
- time:['情境｜质量与截止','用短期团队项目回想真正的取舍。','假设：提交前一小时，一个次要功能偶尔崩溃。','I’d decide what the audience needs to see for the demo to make sense. If the unreliable feature isn’t essential, I’d remove it from this version and tell the team what will be missing. If it’s essential, I’d test the smallest version we can trust. I’d rather make that call early enough for everyone to adjust.','找一个你确实删过、简化过或来不及做的功能。']
-};
 const questions = [];
-function add(school,group,ids,lines,source='practice',kind='story'){
- for (const q of lines.split('|')) questions.push({school,group,ids,q,source,kind});
-}
-add('both',0,['tour','geo','mentor'],'What project would you most like to show a friend, and why?|What small problem made you curious enough to investigate it?|What would you build differently if you had to start a project again?|Tell us about something you taught yourself outside class.');
-add('ut',0,['tour','iyp','reward'],'Why does computer engineering interest you, and what would you like to learn?|What part of a technical project do you find yourself thinking about after it ends?|How has a recent project changed what you want from an engineering education?');
-add('both',1,['orbit','tour','reward'],'Tell us about a time your approach stopped working. What did you change?|Describe feedback that made you rethink a decision.|When did a result contradict what you expected?|Tell us about a mistake you understand differently now.');
-add('both',1,['math','mentor','audio'],'Describe a time when asking for help moved your work forward.|How have you checked whether something you built actually worked?|Tell us about a time when you had to learn a tool under pressure.');
-add('both',2,['tour','iyp','bench'],'Tell us about a team contribution you are proud of.|Describe a time when someone else’s perspective changed your approach.|What did you do when the role you were given was different from the role you wanted?|What is a sign that a team is working well? Give a specific example.');
-add('both',2,['time','ethics','tour'],'Two teammates want to demo different features and you have time for only one. How would you decide?|You realise the team has misunderstood the brief one day before submission. What would you do?','practice','case');
-add('both',3,['club','bench','event'],'Tell us about a time you noticed someone having trouble joining in.|How would you make an event better for first-time participants?|Tell us about an activity that kept going after you stepped back.|Describe a contribution that did not get much attention but mattered to your team.');
-add('both',4,['time','ethics','reward'],'Your teammate suggests leaving out a result that makes your project look weaker. How would you respond?|When might a useful metric give the wrong impression? How would you check?|How would you handle a feature that conflicts with what users want?','practice','case');
-add('both',4,['event','time','ethics'],'Three groups need the same resource at once. How would you make and explain the decision?|What would you do if one team member could not meet an agreed deadline?','practice','case');
-add('ut',5,['queue','iyp','reward'],'How would you estimate how many laptops your school needs for exams?|Design a way to reduce congestion at one school entrance. What data would you collect first?|How would you tell whether a new bus stop location is better for students?|A sensor is giving conflicting readings. Explain how you would isolate the cause.|You have one afternoon to compare two ways of insulating a container. What would you test?|What would you want to know before designing a charging station for a school?','practice','case');
-add('ubc',5,['event','queue','time'],'You have a small budget to help new students meet people. What would you try first?|A school shop has unsold food each afternoon. Pitch a change and explain how to test it.|Create a service for students who have only ten minutes between activities.|You inherit a club no one is signing up for. What would you try in the first week?|Imagine people could borrow one useful thing instead of buying it. What would you choose and why?|You can redesign one ordinary part of a school day. What would you change?','practice','case');
-add('ubc',0,['geo','audio','orbit'],'What is a subject you could talk about for hours?|Describe something creative you have done.','recalled');
-add('ubc',1,['tour','orbit'],'Describe a time when you misunderstood a task or project. What did you do?','recalled');
-add('ubc',2,['club','bench'],'What makes a good team leader, and what makes a good team member?','recalled');
-add('ubc',3,['club','bench'],'Tell us about a time you helped someone who needed it. What impact did you have?','recalled');
-add('ubc',4,['time','event'],'Would you turn in average work on time or take longer to produce better work? Explain.','recalled','case');
-add('ut',5,['queue','iyp'],'What information would you use to estimate the number of schools in Ontario?','public-practice','case');
-const recalledSources = {
- 'Describe something creative you have done.':'https://www.reddit.com/r/ubcsauder/comments/188ke8b/',
- 'public-practice':'https://www.reddit.com/r/OntarioGrade12s/comments/18pli9j/just_did_the_uoft_eng_interview/',
- 'recalled':'https://www.reddit.com/r/ubcsauder/comments/1h3zii1/sauder_interview_questions/'
+const questionSources = {
+ sauder24: 'https://www.reddit.com/r/ubcsauder/comments/1h3zii1/sauder_interview_questions/',
+ sauder23: 'https://www.reddit.com/r/ubcsauder/comments/188ke8b/',
+ sauderCulture: 'https://www.reddit.com/r/BCGrade12s/comments/1p2joti/first_year_at_sauder_ask_away/',
+ sauderTeam: 'https://www.reddit.com/r/ubcsauder/comments/1hutn07/tips_for_the_interview/',
+ sauderIntegrity: 'https://www.reddit.com/r/BCGrade12s/comments/1p2udpz/first_year_at_sauder_ama/',
+ sauderEarlier: 'https://www.reddit.com/r/ubcsauder/comments/q0wywb/ubc_sauder_2022_fall_application/',
+ toronto26: 'https://www.reddit.com/r/OntarioGrade12s/comments/1q0kn5y/uoft_eng_interview/',
+ torontoWhy: 'https://www.reddit.com/r/UofT/comments/1p6uph9/my_daughter_is_applying_to_uoft_engineering_we/',
+ torontoPractice: 'https://www.reddit.com/r/OntarioGrade12s/comments/18pli9j/just_did_the_uoft_eng_interview/',
+ torontoCareer: 'https://www.studentlife.utoronto.ca/wp-content/uploads/Interview-Techniques-Guide-1.pdf'
 };
+function question(school,group,q,ids,topics,{source='practice',link,kind='story'}={}){
+ questions.push({school,group,q,ids:ids.split(' '),topics:topics.split(' '),source,url:questionSources[link],kind});
+}
+function practice(school,group,rows,kind='story'){
+ for(const [q,ids,topics] of rows) question(school,group,q,ids,topics,{kind});
+}
+function recalled(school,group,link,rows,kind='story'){
+ for(const [q,ids,topics] of rows) question(school,group,q,ids,topics,{source:'recalled',link,kind});
+}
+practice('both',0,[
+ ['Introduce yourself. What is something about you that we would not learn from your grades?','intro','intro personality interest'],
+ ['What part of your personality shows up most clearly in the things you build?','intro geo','personality intro technical'],
+ ['Tell us about a project you would show a friend first, and why.','tour','technical creativity interest'],
+ ['What small problem made you curious enough to investigate it?','geo','interest technical'],
+ ['Tell us about something you taught yourself outside class. How did you apply it?','mentor geo','learning technical initiative']
+]);
+practice('ut',0,[
+ ['Why are you interested in computer engineering? What would you like to learn?','engineering','motivation technical'],
+ ['Tell us about a technical result you kept thinking about after the project ended.','reward','technical curiosity testing'],
+ ['How has one of your projects changed what you want from an engineering education?','engineering orbit','motivation learning setback']
+]);
+practice('both',1,[
+ ['Tell us about a time your first approach stopped working. What did you change?','orbit','setback learning technical'],
+ ['Describe feedback that made you rethink a decision.','tour audio','feedback creativity learning'],
+ ['When did a result contradict what you expected?','reward math','testing setback technical'],
+ ['Tell us about a time when asking for help moved your work forward.','mentor','feedback learning teamwork'],
+ ['How have you checked whether something you built actually worked?','math audio','testing technical'],
+ ['Tell us about a mistake you understand differently now.','orbit team','setback learning feedback']
+]);
+practice('both',2,[
+ ['Tell us about a contribution to a team that you are proud of.','tour bench','teamwork technical leadership'],
+ ['Describe a time someone else’s perspective changed what you did.','tour team','teamwork conflict feedback'],
+ ['What did you do when the role you were given differed from the one you wanted?','bench','role setback teamwork'],
+ ['Tell us how you got a team moving again after a disagreement.','team','conflict teamwork empathy'],
+ ['Describe a time you took responsibility for helping a group keep going.','club','responsibility leadership teamwork']
+]);
+practice('both',3,[
+ ['Tell us about a time you noticed someone having trouble joining in.','club','inclusion empathy community'],
+ ['Tell us about an activity that continued after you stepped back. What made that possible?','club','community leadership responsibility'],
+ ['How can someone contribute without being the most visible person on a team?','bench','role teamwork responsibility']
+]);
+practice('both',4,[
+ ['Your teammate wants to leave out a result that makes your project look weaker. How would you respond?','integrity','integrity teamwork conflict'],
+ ['When can a useful metric give the wrong impression? How would you check?','reward','testing tradeoff technical'],
+ ['An optional feature might make your team miss the deadline. How would you decide what to ship?','time','deadline tradeoff design']
+],'case');
+practice('ut',5,[
+ ['The school cafeteria is crowded at lunch. What data would you collect, and what small change would you test?','queue','design testing tradeoff'],
+ ['How would you estimate the number of schools in a province if you could use only a few measurements?','estimate','estimate testing design'],
+ ['Two groups get different readings from a sensor. How would you isolate the cause?','iyp','testing design technical'],
+ ['Your team has too much to demo and five minutes to present. How would you decide what to show?','time','tradeoff design deadline']
+],'case');
+practice('ubc',5,[
+ ['You have a small budget to help new students meet people. Pitch something you could try next week.','event','design inclusion community'],
+ ['Design a practical service for students who have just ten minutes to get lunch.','queue','design community tradeoff'],
+ ['You inherit a club with few sign-ups. What would you try in the first week?','event','design community leadership'],
+ ['Your club has a small room and more students than it can fit. How could you give newcomers a fair chance to join?','event','inclusion design tradeoff']
+],'case');
+recalled('ubc',0,'sauder24',[
+ ['What is a topic you could talk about for a long time? Tell us why.','geo','interest personality intro']
+]);
+recalled('ubc',0,'sauder23',[
+ ['What is the most creative thing you have done?','audio tour','creativity technical'],
+ ['Who has been a positive influence on you?','roleModel','role motivation learning']
+]);
+recalled('ubc',1,'sauder24',[
+ ['Tell us about a project you initially misunderstood and how you got back on track.','tour','feedback setback teamwork']
+]);
+recalled('ubc',2,'sauder24',[
+ ['What qualities would you look for in a leader and in a team member?','lead','leadership role teamwork'],
+ ['Describe how you repaired a relationship after realizing you hurt someone close to you.','repair','empathy conflict responsibility']
+]);
+recalled('ubc',2,'sauderTeam',[
+ ['Do people on a team need to share the same values? Explain.','shared','teamwork integrity conflict'],
+ ['How did you get someone to consider an idea they initially opposed?','persuade','persuasion conflict teamwork'],
+ ['What does responsible leadership look like in your day-to-day life?','responsibility','leadership responsibility community']
+]);
+recalled('ubc',2,'sauderEarlier',[
+ ['Tell us about a disagreement with a peer. What did you do, and how did it end?','team','conflict teamwork empathy']
+]);
+recalled('ubc',3,'sauder24',[
+ ['When have you helped someone who needed support? What difference did it make?','friend club','empathy community inclusion']
+]);
+recalled('ubc',3,'sauderEarlier',[
+ ['Describe how you supported a friend through a difficult time.','friend','empathy responsibility teamwork']
+]);
+recalled('ubc',3,'sauderCulture',[
+ ['Tell us something you learned about another culture and how you use it in your life.','culture','culture learning empathy'],
+ ['How have you made a contribution to your community?','club','community leadership inclusion']
+]);
+recalled('ubc',4,'sauderIntegrity',[
+ ['What does integrity mean to you? Describe a time you acted on it.','integrity','integrity responsibility'],
+ ['What is a responsibility that matters to you, and why?','responsibility','responsibility personality leadership']
+]);
+recalled('ubc',4,'sauder24',[
+ ['Would you submit decent work on time or take longer to make it better?','time','deadline tradeoff responsibility']
+],'case');
+recalled('ubc',4,'sauderEarlier',[
+ ['If you could travel anywhere, where would you go and what would you do there?','travel','travel interest personality']
+]);
+recalled('ut',0,'toronto26',[
+ ['Why did you choose engineering? How did an earlier experience influence that choice?','engineering','motivation technical learning']
+]);
+recalled('ut',0,'torontoWhy',[
+ ['What do you hope to do in the future, and how would studying engineering help?','engineering','motivation technical personality']
+]);
+recalled('ut',4,'toronto26',[
+ ['What qualities make a school good, in your view?','school','inclusion community design']
+]);
+question('ut',5,'What information would you need to estimate the number of schools in Ontario?','estimate','estimate testing design',{source:'public-practice',link:'torontoPractice',kind:'case'});
+question('ut',2,'Tell us about a challenge you encountered while working on a team. How did you deal with it?','team tour','conflict teamwork setback',{source:'official-practice',link:'torontoCareer'});

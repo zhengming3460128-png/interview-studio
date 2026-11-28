@@ -48,13 +48,21 @@ function guide(){
  $('schoolGuide').innerHTML='<article class="panel"><h2>'+g.title+'</h2><p>'+g.intro+'</p><div class="timings">'+times[school].map(([p,a],i)=>'<span class="pill">第 '+(i+1)+' 题 · '+p+'s 准备 / '+a+'s 回答</span>').join('')+'</div><ol>'+g.steps.map(s=>'<li>'+s+'</li>').join('')+'</ol><p>'+g.sources.map(([id,label])=>reference(links[id],label)).join(' · ')+'</p><p class="muted">官方样题请在正式平台的练习区查看。</p></article>';
 }
 function pool(){return questions.filter(q=>q.school==='both'||q.school===school)}
+function draftKey(panel,seconds){
+ const question=questions[Number(panel.dataset.questionIndex)];
+ return 'interview-studio:draft:v1:'+JSON.stringify([question.school,question.q,panel.dataset.answerId,seconds]);
+}
 function populateAnswer(panel,seconds){
- const paragraphs=scriptFor(panel.dataset.answerId,seconds);
+ panel.dataset.seconds=seconds;
+ const draft=getSaved(draftKey(panel,seconds));
+ const paragraphs=draft===null?scriptFor(panel.dataset.answerId,seconds):draft.split(/\n\s*\n/);
  const words=paragraphs.join(' ').match(/\b[\w]+(?:[’'-][\w]+)*/gu)?.length||0;
  for(const button of panel.querySelectorAll('[data-answer-seconds]')){
   button.setAttribute('aria-pressed',String(Number(button.dataset.answerSeconds)===seconds));
  }
- panel.querySelector('.script-length').textContent=words+' 词';
+ panel.querySelector('.script-length').textContent=words+' 词'+(draft===null?'':' · 我的稿子');
+ panel.querySelector('[data-draft-action="restore"]').hidden=draft===null;
+ panel.querySelector('.restore-confirm').hidden=true;
  const script=panel.querySelector('.example');
  script.replaceChildren(...paragraphs.map(text=>{
   const p=document.createElement('p');
@@ -62,15 +70,67 @@ function populateAnswer(panel,seconds){
   return p;
  }));
 }
+function showEditor(panel,editing){
+ panel.querySelector('.draft-editor').hidden=!editing;
+ panel.querySelector('.example').hidden=editing;
+ for(const button of panel.querySelectorAll('[data-answer-seconds], [data-draft-action="edit"], [data-draft-action="restore"]'))button.disabled=editing;
+}
+function editDraft(panel,action){
+ const seconds=Number(panel.dataset.seconds);
+ const key=draftKey(panel,seconds);
+ const input=panel.querySelector('textarea');
+ const status=panel.querySelector('.draft-status');
+ status.textContent='';
+ if(action==='edit'){
+  panel.querySelector('.restore-confirm').hidden=true;
+  input.value=getSaved(key)??scriptFor(panel.dataset.answerId,seconds).join('\n\n');
+  showEditor(panel,true);
+  input.focus();
+  return;
+ }
+ if(action==='restore'){
+  panel.querySelector('.restore-confirm').hidden=false;
+  panel.querySelector('[data-draft-action="confirm-restore"]').focus();
+  return;
+ }
+ if(action==='cancel-restore'){
+  panel.querySelector('.restore-confirm').hidden=true;
+  panel.querySelector('[data-draft-action="restore"]').focus();
+  return;
+ }
+ if(action==='save'||action==='confirm-restore'){
+  const draft=input.value.trim();
+  if(action==='save'&&!draft){status.textContent='请先输入稿子。';input.focus();return;}
+  try{
+   if(action==='save')localStorage.setItem(key,draft);
+   else localStorage.removeItem(key);
+  }catch{status.textContent='浏览器未能保存更改。你可以先复制稿子留存。';return;}
+  for(const other of all('[data-answer-id]')){
+   if(Number(other.dataset.seconds)===seconds&&draftKey(other,seconds)===key&&other.querySelector('.draft-editor').hidden)populateAnswer(other,seconds);
+  }
+  status.textContent=action==='save'?'已保存在当前浏览器。':'已恢复原版范文。';
+ }
+ showEditor(panel,false);
+ populateAnswer(panel,seconds);
+ panel.querySelector('[data-draft-action="edit"]').focus();
+}
 function card(q,seconds=school==='ubc'?90:120){
  const source=q.url?'<p class="muted source-note">'+reference(q.url,'查看来源')+' · '+sourceNotes[q.source]+'</p>':'';
  return source+q.ids.map((id,i)=>{
   const a=answers[id];
   return '<details class="story" data-seconds="'+seconds+'" '+(i===0?'open':'')+'>'+
    '<summary>'+a.title+' <span class="pill">'+answerLabels[a.kind]+'</span></summary>'+
-   '<div data-answer-id="'+id+'"><div class="durations" role="group" aria-label="回答时长">'+
+   '<div data-answer-id="'+id+'" data-question-index="'+questions.indexOf(q)+'"><div class="durations" role="group" aria-label="回答时长">'+
    Object.entries(durationLabels).map(([sec,label])=>'<button type="button" data-answer-seconds="'+sec+'">'+label+'</button>').join('')+
-   '<span class="muted script-length"></span></div><div class="example" lang="en"></div></div></details>';
+   '<span class="muted script-length"></span></div><div class="example" lang="en"></div>'+
+   '<div class="draft-editor" hidden><label>我的练习稿<textarea rows="9" spellcheck="true" lang="en"></textarea></label>'+
+   '<p class="muted">每道题的每个时长单独保存。换设备或清除浏览器数据前，请自行备份。</p>'+
+   '<div class="actions"><button type="button" data-draft-action="save">保存稿子</button><button type="button" class="secondary" data-draft-action="cancel">取消编辑</button></div></div>'+
+   '<div class="actions"><button type="button" class="secondary" data-draft-action="edit">编辑成我的稿子</button>'+
+   '<button type="button" class="secondary" data-draft-action="restore" hidden>恢复原版范文</button></div>'+
+   '<div class="restore-confirm" hidden><p>恢复后会移除这个时长的个人稿。</p><div class="actions">'+
+   '<button type="button" data-draft-action="confirm-restore">确认恢复</button><button type="button" class="secondary" data-draft-action="cancel-restore">保留个人稿</button></div></div>'+
+   '<p class="muted draft-status" role="status"></p></div></details>';
  }).join('');
 }
 function fillOpenStory(story){
@@ -85,7 +145,13 @@ document.addEventListener('toggle',e=>{
 },true);
 document.addEventListener('click',e=>{
  const button=e.target.closest('[data-answer-seconds]');
- if(button)populateAnswer(button.closest('[data-answer-id]'),Number(button.dataset.answerSeconds));
+ if(button){
+  const panel=button.closest('[data-answer-id]');
+  panel.querySelector('.draft-status').textContent='';
+  populateAnswer(panel,Number(button.dataset.answerSeconds));
+ }
+ const edit=e.target.closest('[data-draft-action]');
+ if(edit)editDraft(edit.closest('[data-answer-id]'),edit.dataset.draftAction);
 });
 function bank(){
  const s=$('search').value, c=$('category').value, p=$('source').value;

@@ -4,7 +4,7 @@ Browser-based practice for U of T Engineering and UBC Sauder BCom video intervie
 
 The question bank labels firsthand recollections, published practice examples and original scenarios separately. Practice answers can be adapted from experience, fictional or hypothetical. See the official applicant portal for the current assessment instructions.
 
-The site has no backend. Recording is optional and videos stay in the browser session. Camera and microphone access typically requires HTTPS.
+The site has no backend. Personal scripts are saved in the current browser, separately for each question, example, and answer length. You can restore the built-in example from the corresponding answer card. Recording is optional and videos stay in the browser session. Camera and microphone access typically requires HTTPS.
 
 ## Publish
 
